@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %} REGISTRO {% endblock %}
+{% block content %}
+<section class="vh-100" style="background-color: #333;">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-lg-8 col-xl-6">
+                <div class="card shadow-lg" style="border-radius: 15px;">
+                    <div class="card-body p-5 text-black">
+                        <h3 class="fw-bold text-center mb-4" style="color: #f9c74f;">Registro de Usuario</h3>
+        <!-- Botón Volver a la derecha -->
+        <div class="text-end">
+            <a href="/" class="btn btn-secondary" style="position: absolute; top: 15px; right: 15px;">
+                Volver
+            </a>
+        </div>
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-outline">
+                                        <label class="form-label" for="nombre" style="color: #333;">Nombre</label>
+                                        <input type="text" id="nombre" class="form-control form-control-lg" placeholder="Nombre" required />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-outline">
+                                        <label class="form-label" for="apellido" style="color: #333;">Apellido</label>
+                                        <input type="text" id="apellido" class="form-control form-control-lg" placeholder="Apellido" required />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-outline mb-4">
+                                <label class="form-label" for="correo" style="color: #333;">Correo Electrónico</label>
+                                <input type="email" id="correo" class="form-control form-control-lg" placeholder="Correo Electrónico" required />
+                            </div>
+
+                            <div class="form-outline mb-4">
+                                <label class="form-label" for="telefono" style="color: #333;">Teléfono</label>
+                                <input type="tel" id="telefono" class="form-control form-control-lg" placeholder="Teléfono" required />
+                            </div>
+
+                            <div class="form-outline mb-4">
+                                <label class="form-label" for="password" style="color: #333;">Contraseña</label>
+                                <input type="password" id="password" class="form-control form-control-lg" placeholder="Contraseña" required minlength="8" />
+                            </div>
+
+                            <div class="form-outline mb-4">
+                                <label class="form-label" for="rol" style="color: #333;">Selecciona tu rol</label>
+                                <select id="rol" class="form-select form-control-lg" required>
+                                    <option value="" disabled selected>Selecciona tu rol</option>
+                                    <option value="subastador">Subastador</option>
+                                    <option value="cliente">Cliente</option>
+                                </select>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-lg btn-block text-white" style="background-color: #f9c74f; border-radius: 10px;">Registrarse</button>
+                            </div>
+                        </form>
+
+                        <div class="mt-3 text-center">
+                            <p class="text-muted">¿Ya tienes una cuenta? <a href="login" class="text-primary">Inicia sesión aquí</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

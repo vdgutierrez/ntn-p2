@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUBASTEITOR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="navbar-brand">SubasTEITOR</a>
+            <ul class="nav">
+                <li><a href="#">Inicio</a></li>
+                <li><a href="#">Subastas</a></li>
+                <li><a href="#">Cómo Funciona</a></li>
+                <li><a href="#">Contacto</a></li>
+            </ul>
+            <div class="auth-buttons">
+                <a href="{{ url_for('login') }}" class="btn">Iniciar Sesión</a>
+                <a href="{{ url_for('register') }}" class="btn">Registrarse</a>
+                </div>
+            
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>¡Bienvenidos a SubasTEITOR!</h1>
+            <p>Donde las mejores ofertas y oportunidades están a tu alcance. Comienza a pujar hoy y gana productos exclusivos.</p>
+            <a href="#" class="btn-hero">Explorar Subastas</a>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section class="about-us">
+        <div class="container">
+            <h2>Sobre Nosotros</h2>
+            <div class="about-content">
+                <p>En <strong>SubasTEITOR</strong>, nos especializamos en ofrecer una plataforma de subastas en línea fácil y segura. Nuestra misión es conectar compradores y vendedores de manera eficiente, proporcionando un espacio donde se puedan adquirir productos únicos a precios competitivos. Ofrecemos un servicio confiable, garantizando la seguridad y transparencia en todas las transacciones.</p>
+            </div>
+            <div class="about-cards">
+                <div class="about-card">
+                    <h3>Misión</h3>
+                    <p>Fomentar un mercado justo y accesible para todos, donde los usuarios puedan comprar y vender productos a través de subastas dinámicas y transparentes.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Visión</h3>
+                    <p>Convertirnos en la principal plataforma de subastas en línea de la región, destacándonos por nuestro compromiso con la satisfacción del cliente y la innovación tecnológica.</p>
+                </div>
+                <div class="about-card">
+                    <h3>¿Por qué SubasTEITOR?</h3>
+                    <ul>
+                        <li>Plataforma segura y fácil de usar</li>
+                        <li>Subastas en linea.</li>
+                        <li>Subastas en tiempo real</li>
+                        <li>Variedad de productos exclusivos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer with Contact -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h4>SubastaPro</h4>
+                <p>Tu mejor opción para encontrar productos exclusivos a los mejores precios.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Enlaces Ráp

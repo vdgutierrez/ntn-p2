@@ -1,0 +1,81 @@
+/* Estilos personalizados */
+body {
+    background-color: #333;
+}
+
+section.vh-100 {
+    background-color: #333 !important;
+}
+
+.card {
+    border-radius: 1rem;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+    border: none;
+}
+
+.card-body {
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 0 1rem 1rem 0;
+}
+
+.card-body .h1 {
+    color: #f9c74f;
+    font-size: 2.5rem;
+}
+
+.form-control {
+    border: 2px solid #333;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #f9c74f;
+}
+
+.form-label {
+    color: #333;
+    font-weight: bold;
+}
+
+.btn-lg {
+    background-color: #f9c74f;
+    color: #fff;
+    border-radius: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-lg:hover {
+    background-color: #eab308;
+    color: #fff;
+}
+
+img {
+    border-radius: 1rem 0 0 1rem;
+    border: 3px solid #f9c74f;
+    transition: transform 0.3s ease;
+}
+
+img:hover {
+    transform: scale(1.05);
+}
+
+/* Estilos para el texto de error */
+#emailError, #passwordError {
+    color: #f9c74f;
+}
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 768px) {
+    .card {
+        border-radius: 1rem;
+    }
+    .card-body {
+        padding: 2rem;
+    }
+}
