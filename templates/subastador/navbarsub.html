@@ -1,0 +1,27 @@
+<nav class="navbar">
+    <div class="container">
+        <a href="#" class="navbar-brand">SubasTEITOR</a>
+        <ul class="nav">
+            <li>
+                <a href="{{ url_for('subastador_dashboard') }}" class="nav-link">Inicio Subastador</a>
+            </li>
+            <li>
+                <a href="{{ url_for('gestion_subastas') }}" class="nav-link">Gestión de Subastas</a>
+            </li>
+            <li>
+                <a href="{{ url_for('subasta_activa') }}" class="nav-link">Subasta Activa</a>
+            </li>
+            <li>
+                <a href="{{ url_for('historial_subastas') }}" class="nav-link">Historial de Subastas</a>
+            </li>
+            <li>
+                <a href="{{ url_for('gestion_productos') }}" class="nav-link">Gestión de Productos</a>
+            </li>
+            <li>
+                <a href="{{ url_for('estadisticas_reportes') }}" class="nav-link">Estadísticas y Reportes</a>
+            </li>
+
+
+        </ul>
+    </div>
+</nav>

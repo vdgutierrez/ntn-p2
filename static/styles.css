@@ -1,0 +1,55 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #fff;
+    color: #333;
+}
+
+.navbar {
+    background-color: #333; /* Color gris oscuro */
+    padding: 10px 20px;
+}
+
+.navbar a {
+    color: #fff; /* Texto en blanco */
+    margin-right: 15px;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 24px;
+    color: #f9c74f; /* Amarillo */
+}
+
+.navbar a:hover {
+    color: #f9c74f; /* Hover amarillo */
+}
+
+.container {
+    margin-top: 40px;
+}
+
+.card {
+    background-color: #fff;
+    border: 1px solid #f9c74f;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #f9c74f; /* Encabezado amarillo */
+    color: #333;
+    font-weight: bold;
+}
+
+.btn {
+    background-color: #f9c74f;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+.btn:hover {
+    background-color: #e5b93c; /* Hover para el botón */
+    color: #fff;
+}

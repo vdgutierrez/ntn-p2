@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Subastas</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    {% include 'subastador/navbarsub.html' %}
+    <!-- Contenido -->
+    <div class="container">
+        <div class="card">
+            <div class="card-header">Historial de Subastas</div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item">Subasta 1: Ganador - Juan, Precio Final: $300</li>
+                    <li class="list-group-item">Subasta 2: Ganador - María, Precio Final: $500</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

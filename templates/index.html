@@ -13,11 +13,17 @@
         <div class="container">
             <a href="#" class="navbar-brand">SubasTEITOR</a>
             <ul class="nav">
-                <li><a href="#">Inicio</a></li>
-                <li><a href="#">Subastas</a></li>
-                <li><a href="#">Cómo Funciona</a></li>
-                <li><a href="#">Contacto</a></li>
+                <li>                
+                    <a href="{{ url_for('index') }}" class="btn">Inicio</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('cliente_dashboard') }}" class="btn">Cliente</a>  <!-- Ruta cliente -->
+                </li>
+                <li>
+                    <a href="{{ url_for('subastador_dashboard') }}" class="btn">Subastador</a> <!-- Ruta subastador -->
+                </li>
             </ul>
+            
             <div class="auth-buttons">
                 <a href="{{ url_for('login') }}" class="btn">Iniciar Sesión</a>
                 <a href="{{ url_for('register') }}" class="btn">Registrarse</a>

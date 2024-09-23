@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Producto</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+</head>
+<body>
+
+    <!-- Incluir el Navbar -->
+    {% include 'subastador/navbarsub.html' %}
+
+    <!-- Formulario para Editar Producto -->
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">Editar Producto</div>
+            <div class="card-body">
+                <form action="/subastador/editar-producto/{{ producto.id }}" method="post">
+                    <div class="form-group">
+                        <label for="nombre">Nombre del Producto</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" value="{{ producto.nombre }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="precio_inicial">Precio Inicial</label>
+                        <input type="number" class="form-control" id="precio_inicial" name="precio_inicial" step="0.01" value="{{ producto.precio_inicial }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="categoria">Categoría</label>
+                        <select class="form-control" id="categoria" name="categoria">
+                            <option value="electronicos" {% if producto.categoria == 'electronicos' %}selected{% endif %}>Electrónicos</option>
+                            <option value="vehiculos" {% if producto.categoria == 'vehiculos' %}selected{% endif %}>Vehículos</option>
+                            <option value="muebles" {% if producto.categoria == 'muebles' %}selected{% endif %}>Muebles</option>
+                            <!-- Más categorías si es necesario -->
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Subastas</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <!-- Incluir el Navbar -->
+    {% include 'subastador/navbarsub.html' %}
+
+    <!-- Contenido -->
+    <div class="container">
+        <div class="card mt-5">
+            <div class="card-header">Crear Nueva Subasta</div>
+            <div class="card-body">
+                <form action="/subastador/guardar-subasta" method="post" enctype="multipart/form-data">
+                    <!-- Campo para subir una foto -->
+                    <div class="form-group">
+                        <label for="fotoProducto">Foto del Producto</label>
+                        <input type="file" class="form-control-file" id="fotoProducto" name="fotoProducto">
+                    </div>
+
+                    <!-- Tipo de subasta (En Vivo o En Línea) -->
+                    <div class="form-group">
+                        <label for="tipoSubasta">Tipo de Subasta</label>
+                        <select class="form-control" id="tipoSubasta" name="tipoSubasta">
+                            <option value="en_vivo">En Vivo</option>
+                            <option value="en_linea">En Línea</option>
+                        </select>
+                    </div>
+
+                    <!-- Descripción de la Subasta -->
+                    <div class="form-group">
+                        <label for="descripcion">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                    </div>
+
+                    <!-- Categoría del Producto -->
+                    <div class="form-group">
+                        <label for="categoria">Categoría</label>
+                        <select class="form-control" id="categoria" name="categoria">
+                            <option value="electronicos">Electrónicos</option>
+                            <option value="vehiculos">Vehículos</option>
+                            <option value="muebles">Muebles</option>
+                            <!-- Puedes añadir más categorías aquí -->
+                        </select>
+                    </div>
+
+                    <!-- Enlace (Solo para subastas en línea) -->
+                    <div class="form-group">
+                        <label for="enlaceSubasta">Enlace de la Subasta (Solo si es en línea)</label>
+                        <input type="url" class="form-control" id="enlaceSubasta" name="enlaceSubasta" placeholder="https://ejemplo.com/enlace-subasta">
+                    </div>
+
+                    <!-- Precio -->
+                    <div class="form-group">
+                        <label for="precio">Precio Inicial</label>
+                        <input type="number" class="form-control" id="precio" name="precio" step="0.01" placeholder="Ingresa el precio inicial">
+                    </div>
+
+                    <!-- Tipo de Moneda y Tipo de Cambio -->
+                    <div class="form-group">
+                        <label for="tipoMoneda">Tipo de Moneda</label>
+                        <select class="form-control" id="tipoMoneda" name="tipoMoneda" onchange="mostrarTipoCambio(this.value)">
+                            <option value="USD">Dólares (USD)</option>
+                            <option value="EUR">Euros (EUR)</option>
+                            <option value="BOB">Bolivianos (BOB)</option>
+                            <!-- Añade más tipos de moneda si es necesario -->
+                        </select>
+                    </div>
+
+                    <!-- Casilla para el Tipo de Cambio (solo se muestra si no es BOB) -->
+                    <div class="form-group" id="tipoCambioGroup" style="display: none;">
+                        <label for="tipoCambio">Tipo de Cambio (respecto a BOB)</label>
+                        <input type="number" class="form-control" id="tipoCambio" name="tipoCambio" step="0.01" placeholder="Ingresa el tipo de cambio">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Registrar Subasta</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para mostrar o esconder el campo de tipo de cambio según la moneda seleccionada
+        function mostrarTipoCambio(moneda) {
+            if (moneda === "BOB") {
+                document.getElementById('tipoCambioGroup').style.display = 'none';
+            } else {
+                document.getElementById('tipoCambioGroup').style.display = 'block';
+            }
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
