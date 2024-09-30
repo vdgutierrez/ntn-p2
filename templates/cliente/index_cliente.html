@@ -1,0 +1,67 @@
+{% include 'cliente/navbarcliente.html' %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard del Cliente</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <!-- Incluir el Navbar -->
+
+    <!-- Hero Section -->
+    <section class="hero text-center py-5">
+        <div class="container">
+            <h1>Bienvenido al Dashboard del Cliente</h1>
+            <p>Explora las subastas, revisa tu historial y gestiona tu cuenta.</p>
+        </div>
+    </section>
+
+    <!-- Sección de Acciones Rápidas -->
+    <div class="container mt-5">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <a href="{{ url_for('explorar_subastas') }}" class="btn btn-primary btn-lg btn-block">Explorar Subastas</a>
+            </div>
+            <div class="col-md-4">
+                <a href="{{ url_for('historial_subastas_cliente') }}" class="btn btn-success btn-lg btn-block">Historial de Subastas</a>
+            </div>
+            <div class="col-md-4">
+                <a href="{{ url_for('perfil_cliente') }}" class="btn btn-info btn-lg btn-block">Perfil</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Subastas Activas -->
+    <div class="container mt-5">
+        <h3>Subastas Activas</h3>
+        <div class="row">
+            {% for subasta in subastas %}
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="{{ subasta.imagen }}" class="card-img-top" alt="Producto en Subasta">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ subasta.nombre_producto }}</h5>
+                        <p class="card-text">Precio actual: ${{ subasta.precio_actual }}</p>
+                        <a href="{{ url_for('detalle_subasta', subasta_id=subasta.id) }}" class="btn btn-primary">Ver Subasta</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p>&copy; 2024 SubasTEITOR. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

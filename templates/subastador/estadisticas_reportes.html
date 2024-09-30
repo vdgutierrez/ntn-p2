@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas y Reportes</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <!-- Incluir el Navbar -->
+    {% include 'subastador/navbarsub.html' %}
+
+    <!-- Filtros de Fecha -->
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">Filtros de Fecha</div>
+            <div class="card-body">
+                <form id="filtroFecha" method="GET" action="/subastador/estadisticas-reportes">
+                    <div class="form-group">
+                        <label for="fechaInicio">Fecha de Inicio</label>
+                        <input type="date" class="form-control" id="fechaInicio" name="fechaInicio">
+                    </div>
+                    <div class="form-group">
+                        <label for="fechaFin">Fecha de Fin</label>
+                        <input type="date" class="form-control" id="fechaFin" name="fechaFin">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generar Reporte</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Gráficos -->
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Gráfico de Ingresos Generados -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Ingresos Generados</div>
+                    <div class="card-body">
+                        <canvas id="ingresosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Productos Más Vendidos -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Productos Más Vendidos</div>
+                    <div class="card-body">
+                        <canvas id="productosVendidosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <!-- Actividad de los Clientes -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Clientes Más Activos</div>
+                    <div class="card-body">
+                        <canvas id="clientesActivosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subastas Activas vs. Finalizadas -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Subastas Activas vs. Finalizadas</div>
+                    <div class="card-body">
+                        <canvas id="subastasChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Incluir Chart.js para los gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Ejemplo de gráfico de Ingresos Generados
+        var ctxIngresos = document.getElementById('ingresosChart').getContext('2d');
+        var ingresosChart = new Chart(ctxIngresos, {
+            type: 'line',
+            data: {
+                labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo'], // Cambia esto por datos reales
+                datasets: [{
+                    label: 'Ingresos en $',
+                    data: [1200, 1900, 3000, 5000, 2000], // Datos de ejemplo
+                    backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        // Ejemplo de gráfico de Productos Más Vendidos
+        var ctxProductos = document.getElementById('productosVendidosChart').getContext('2d');
+        var productosChart = new Chart(ctxProductos, {
+            type: 'bar',
+            data: {
+                labels: ['Producto A', 'Producto B', 'Producto C'], // Cambia esto por datos reales
+                datasets: [{
+                    label: 'Cantidad Vendida',
+                    data: [5, 3, 9], // Datos de ejemplo
+                    backgroundColor: 'rgba(255, 193, 7, 0.2)',
+                    borderColor: 'rgba(255, 193, 7, 1)',
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        // Ejemplo de gráfico de Actividad de los Clientes
+        var ctxClientes = document.getElementById('clientesActivosChart').getContext('2d');
+        var clientesChart = new Chart(ctxClientes, {
+            type: 'pie',
+            data: {
+                labels: ['Cliente 1', 'Cliente 2', 'Cliente 3'], // Cambia esto por datos reales
+                datasets: [{
+                    label: 'Pujas Realizadas',
+                    data: [10, 20, 30], // Datos de ejemplo
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        // Ejemplo de gráfico de Subastas Activas vs. Finalizadas
+        var ctxSubastas = document.getElementById('subastasChart').getContext('2d');
+        var subastasChart = new Chart(ctxSubastas, {
+            type: 'doughnut',
+            data: {
+                labels: ['Activas', 'Finalizadas'], // Cambia esto por datos reales
+                datasets: [{
+                    label: 'Estado de Subastas',
+                    data: [5, 10], // Datos de ejemplo
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            }
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

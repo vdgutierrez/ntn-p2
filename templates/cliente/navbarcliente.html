@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand-lg style="background-color: #333 >
+    <div class="container-fluid" >
+        <a href="#" class="navbar-brand">SubasTEITOR</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a href="{{ url_for('cliente_dashboard') }}" class="nav-link">Inicio Subastador</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('explorar_subastas') }}" class="nav-link">explorar subastas</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('historial_subastas_cliente') }}" class="nav-link">historial</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('perfil_cliente') }}" class="nav-link">Perfil usuario</a>
+                </li>
+            </ul>
+            <div class="ml-auto">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-primary">Inicio</a>
+            </div>
+        </div>
+    </div>
+</nav>
+

@@ -16,27 +16,19 @@
     <div class="container mt-5">
         <div class="row">
             <!-- Filtro por Categoría -->
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">Filtrar por Categoría</div>
-                    <div class="card-body">
-                        <form id="filtroCategoria" method="GET" action="/subastador/filtrar-productos">
-                            <div class="form-group">
-                                <label for="categoriaFiltro">Categoría</label>
-                                <select class="form-control" id="categoriaFiltro" name="categoriaFiltro">
-                                    <option value="todos">Todos</option>
-                                    <option value="electronicos">Electrónicos</option>
-                                    <option value="vehiculos">Vehículos</option>
-                                    <option value="muebles">Muebles</option>
-                                    <!-- Más categorías si es necesario -->
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Filtrar</button>
-                        </form>
-                    </div>
+            <form method="GET" action="{{ url_for('gestion_productos') }}">
+                <div class="form-group">
+                    <label for="categoriaFiltro">Filtrar por Categoría</label>
+                    <select class="form-control" id="categoriaFiltro" name="categoriaFiltro">
+                        <option value="todos">Todos</option>
+                        <option value="electronicos">Electrónicos</option>
+                        <option value="vehiculos">Vehículos</option>
+                        <option value="muebles">Muebles</option>
+                    </select>
                 </div>
-            </div>
-
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </form>
+            
             <!-- Listado de Productos -->
             <div class="col-md-8">
                 <div class="card">

@@ -1,27 +1,34 @@
-<nav class="navbar">
-    <div class="container">
+<nav class="navbar navbar-expand-lg style="background-color: #333 >
+    <div class="container-fluid" >
         <a href="#" class="navbar-brand">SubasTEITOR</a>
-        <ul class="nav">
-            <li>
-                <a href="{{ url_for('subastador_dashboard') }}" class="nav-link">Inicio Subastador</a>
-            </li>
-            <li>
-                <a href="{{ url_for('gestion_subastas') }}" class="nav-link">Gestión de Subastas</a>
-            </li>
-            <li>
-                <a href="{{ url_for('subasta_activa') }}" class="nav-link">Subasta Activa</a>
-            </li>
-            <li>
-                <a href="{{ url_for('historial_subastas') }}" class="nav-link">Historial de Subastas</a>
-            </li>
-            <li>
-                <a href="{{ url_for('gestion_productos') }}" class="nav-link">Gestión de Productos</a>
-            </li>
-            <li>
-                <a href="{{ url_for('estadisticas_reportes') }}" class="nav-link">Estadísticas y Reportes</a>
-            </li>
-
-
-        </ul>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a href="{{ url_for('subastador_dashboard') }}" class="nav-link">Inicio Subastador</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('gestion_subastas') }}" class="nav-link">Gestión de Subastas</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('subasta_activa') }}" class="nav-link">Subasta Activa</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('historial_subastas') }}" class="nav-link">Historial de Subastas</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('gestion_productos') }}" class="nav-link">Gestión de Productos</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('estadisticas_reportes') }}" class="nav-link">Estadísticas y Reportes</a>
+                </li>
+            </ul>
+            <div class="ml-auto">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-primary">Inicio</a>
+            </div>
+        </div>
     </div>
 </nav>
+

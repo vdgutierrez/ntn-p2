@@ -1,6 +1,7 @@
-from flask import Flask,request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for
 
 app = Flask(__name__)
+
 # Lista temporal de productos (esto debería provenir de la base de datos)
 productos = [
     {'id': 1, 'nombre': 'TV 4K', 'categoria': 'electronicos', 'precio_inicial': 300.00, 'foto_url': '/static/img/tv.jpg'},
@@ -8,24 +9,80 @@ productos = [
     {'id': 3, 'nombre': 'Sofá', 'categoria': 'muebles', 'precio_inicial': 200.00, 'foto_url': '/static/img/sofa.jpg'}
 ]
 
-@app.route('/subastador/gestion-productos', methods=['GET', 'POST'])
+subastas = [
+    {'id': 1, 'nombre_producto': 'TV 4K', 'precio_actual': 350.00, 'imagen': '/static/img/tv.jpg'},
+    {'id': 2, 'nombre_producto': 'Coche', 'precio_actual': 15500.00, 'imagen': '/static/img/coche.jpg'},
+    {'id': 3, 'nombre_producto': 'Sofá', 'precio_actual': 220.00, 'imagen': '/static/img/sofa.jpg'}
+]
+
+# Rutas del cliente
+@app.route('/cliente/explorar-subastas')
+def explorar_subastas():
+    # Lista temporal de subastas, que idealmente provendría de la base de datos
+    subastas = [
+        {'id': 1, 'nombre_producto': 'TV 4K', 'categoria': 'electronicos', 'precio_inicial': 300.00, 'precio_actual': 350.00, 'imagen': '/static/img/tv.jpg'},
+        {'id': 2, 'nombre_producto': 'Coche', 'categoria': 'vehiculos', 'precio_inicial': 15000.00, 'precio_actual': 15500.00, 'imagen': '/static/img/coche.jpg'},
+        {'id': 3, 'nombre_producto': 'Sofá', 'categoria': 'muebles', 'precio_inicial': 200.00, 'precio_actual': 220.00, 'imagen': '/static/img/sofa.jpg'}
+    ]
+    return render_template('cliente/explorar_subastas.html', subastas=subastas)
+
+@app.route('/cliente/detalle-subasta/<int:subasta_id>', methods=['GET', 'POST'])
+def detalle_subasta(subasta_id):
+    # Buscar la subasta en base al id proporcionado
+    subasta = next((s for s in subastas if s['id'] == subasta_id), None)
+
+    if subasta is None:
+        return "Subasta no encontrada", 404
+
+    # Historial de pujas (esto debería venir de una base de datos en un caso real)
+    historial_pujas = [
+        {'pujador': 'Carlos', 'monto': 320.00},
+        {'pujador': 'Ana', 'monto': 340.00},
+        {'pujador': 'Luis', 'monto': 350.00}
+    ]
+
+    # Si el cliente hace una nueva puja (POST request)
+    if request.method == 'POST':
+        nueva_puja = float(request.form['monto'])
+        if nueva_puja > subasta['precio_actual']:
+            subasta['precio_actual'] = nueva_puja
+            # Aquí se debería guardar la puja en el historial en una base de datos real
+            historial_pujas.append({'pujador': 'Juanjo Valda', 'monto': nueva_puja})
+        else:
+            return "La puja debe ser mayor al precio actual", 400
+
+    return render_template('cliente/detalle_subasta.html', subasta=subasta, historial_pujas=historial_pujas)
+
+
+@app.route('/cliente/historial-subastas')
+def historial_subastas_cliente():
+    # Historial de subastas en las que el cliente ha participado
+    historial = [
+        {'id': 1, 'nombre_producto': 'TV 4K', 'precio_final': 350.00, 'estado': 'Ganada'},
+        {'id': 2, 'nombre_producto': 'Coche', 'precio_final': 15500.00, 'estado': 'Perdida'}
+    ]
+    return render_template('cliente/historial_subasta_cliente.html', historial=historial)
+
+@app.route('/cliente/perfil')
+def perfil_cliente():
+    # Perfil del cliente
+    cliente = {'nombre': 'Juan Pérez', 'correo': 'juan@example.com', 'saldo': 500.00}
+    return render_template('cliente/perfil_cliente.html', cliente=cliente)
+
+# Ruta para gestionar productos (con filtro)
+@app.route('/subastador/gestion-productos', methods=['GET'])
 def gestion_productos():
+    # Obtén el valor de 'categoriaFiltro' desde la URL; si no existe, usa 'todos' por defecto
     categoria_filtro = request.args.get('categoriaFiltro', 'todos')
-    productos_filtrados = productos
 
-    if categoria_filtro != 'todos':
+    # Si la categoría es 'todos', no se aplica ningún filtro
+    if categoria_filtro == 'todos':
+        productos_filtrados = productos
+    else:
+        # Filtrar los productos por la categoría seleccionada
         productos_filtrados = [producto for producto in productos if producto['categoria'] == categoria_filtro]
 
-    return render_template('subastador/gestion_productos.html', productos=productos_filtrados)
-
-@app.route('/subastador/filtrar-productos', methods=['GET'])
-def filtrar_productos():
-    categoria_filtro = request.args.get('categoriaFiltro', 'todos')
-    productos_filtrados = productos
-
-    if categoria_filtro != 'todos':
-        productos_filtrados = [producto for producto in productos if producto['categoria'] == categoria_filtro]
-
+    # Renderiza la página con los productos filtrados
     return render_template('subastador/gestion_productos.html', productos=productos_filtrados)
 
 
@@ -48,7 +105,6 @@ def eliminar_producto(id):
     global productos
     productos = [producto for producto in productos if producto['id'] != id]
     return redirect(url_for('gestion_productos'))
-
 
 # Ruta para la página principal
 @app.route('/')
@@ -79,8 +135,6 @@ def subasta_activa():
 @app.route('/subastador/historial-subastas')
 def historial_subastas():
     return render_template('subastador/historial.html')
-
-
 
 # Ruta para estadísticas y reportes
 @app.route('/subastador/estadisticas-reportes')
