@@ -291,11 +291,11 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        name = request.form.get('name')
-        lastname = request.form.get('lastname')
-        email = request.form.get('email')
+        name = request.form.get('nombre')
+        lastname = request.form.get('apellido')
+        email = request.form.get('correo')
         password = request.form.get('password')
-        tipo = request.form.get('tipo')
+        tipo = request.form.get('rol')
 
         print(f"Nombre: {name}")
         print(f"Apellido: {lastname}")
@@ -310,7 +310,7 @@ def register():
         # Inserta datos en la base de datos
         insert_perfil(name, lastname, email, password, tipo)
 
-        return redirect(url_for('subastas'))
+        return redirect(url_for('explorar_subastas'))
 
     return render_template('register.html')
 
