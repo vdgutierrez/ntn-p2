@@ -26,13 +26,13 @@ subastas = [
 # Ruta para explorar subastas
 
 
-@app.route('/cliente/explorar-subastas')
+@app.route('/cliente/explorar_subastas')
 def explorar_subastas():
     conexion = db_connection()
     cursor = conexion.cursor(dictionary=True)
 
     # Consulta para obtener subastas
-    cursor.execute("SELECT * FROM subastas")
+    cursor.execute("SELECT * FROM subasta")
     subastas = cursor.fetchall()
 
     conexion.close()
@@ -259,30 +259,34 @@ def login():
         # Usar la función db_connection() para conectar a la base de datos
         conexion = db_connection()
         if conexion:
+            print('entraaaaaa')
             cursor = conexion.cursor(dictionary=True)
 
             # Verificar si el usuario existe en la base de datos
             # Cambiar la consulta en el login para reflejar la estructura correcta de la base de datos
             cursor.execute('''
-                SELECT cliente.*, persona.correo
+                SELECT cliente.contrasena, persona.correo
                 FROM cliente
                 INNER JOIN persona ON cliente.persona_id = persona.id_persona
                 WHERE persona.correo = %s AND cliente.contrasena = %s
                 ''', (email, password))
-
+            
             user = cursor.fetchone()
+            print("usuario encontrado en bd: ",user)
             conexion.close()  # Cierra la conexión después de la consulta
 
             if user:
-                return redirect('cliente/dashboard')
+                print('finally')
+                return redirect(url_for('explorar_subastas'))
             else:
+                print('Usuario o contraseña incorrectos. Por favor, inténtalo de nuevo.')
                 flash(
                     'Usuario o contraseña incorrectos. Por favor, inténtalo de nuevo.', 'error')
                 return redirect(url_for('login'))
         else:
+            print('Error al conectar a la base de datos.')
             flash('Error al conectar a la base de datos.', 'error')
             return redirect(url_for('login'))
-
     return render_template('login.html')
 
 # Ruta para la página de registro
@@ -296,26 +300,28 @@ def register():
         email = request.form.get('correo')
         password = request.form.get('password')
         tipo = request.form.get('rol')
+        phone = request.form.get('telefono')
 
         print(f"Nombre: {name}")
         print(f"Apellido: {lastname}")
         print(f"Correo: {email}")
         print(f"Contraseña: {password}")
         print(f"Tipo: {tipo}")
+        print(f"Telefono: {phone}")
 
         # Verifica que todos los campos se han llenado
-        if not all([name, lastname, email, password, tipo]):
+        if not all([name, lastname, email, password, tipo, phone]):
             return "Todos los campos son obligatorios", 400
 
         # Inserta datos en la base de datos
-        insert_perfil(name, lastname, email, password, tipo)
+        insert_perfil(name, lastname, email, password, tipo, phone)
 
         return redirect(url_for('explorar_subastas'))
 
     return render_template('register.html')
 
 
-def insert_perfil(name, lastname, email, password, tipo):
+def insert_perfil(name, lastname, email, password, tipo, phone):
     conexion = db_connection()
     if conexion is None:
         return
@@ -324,20 +330,20 @@ def insert_perfil(name, lastname, email, password, tipo):
 
         # Inserción en la tabla persona
         cursor.execute(
-            "INSERT INTO persona (nombre, apellido, correo) VALUES (%s, %s, %s)",
-            (name, lastname, email)
+            "INSERT INTO persona (nombre, apellido, correo, telefono) VALUES (%s, %s, %s, %s)",
+            (name, lastname, email, phone)
         )
         conexion.commit()
 
         id_persona = cursor.lastrowid  # Obtiene el ID de la persona insertada
 
         # Inserción en la tabla cliente u organizador según el tipo de usuario
-        if tipo == 'Cliente':
+        if tipo == 'cliente' or 'Cliente':
             cursor.execute(
                 "INSERT INTO cliente (contrasena, persona_id) VALUES (%s, %s)",
                 (password, id_persona)
             )
-        elif tipo == 'Organizador':
+        elif tipo == 'subastador' or 'Subastador':
             cursor.execute(
                 "INSERT INTO organizador (usuario, contrasena, persona_id) VALUES (%s, %s, %s)",
                 (f"{name} {lastname}", password, id_persona)
