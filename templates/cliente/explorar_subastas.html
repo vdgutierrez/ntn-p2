@@ -45,19 +45,31 @@
         <div class="row">
             <!-- Iterar sobre las subastas activas -->
             {% for subasta in subastas %}
-            <div class="col-md-4">
-                <div class="card subasta-card">
-                    <img src="{{ subasta.imagen }}" class="card-img-top subasta-img" alt="Producto en Subasta">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ subasta.nombre_producto }}</h5>
-                        <p class="card-text">Categoría: <strong>{{ subasta.categoria }}</strong></p>
-                        <p class="card-text">Precio Inicial: ${{ subasta.precio_inicial }}</p>
-                        <p class="card-text precio-actual">Precio Actual: ${{ subasta.precio_actual }}</p>
-                        <a href="{{ url_for('detalle_subasta', subasta_id=subasta.id) }}" class="btn btn-pujar btn-block">Ver Subasta</a>
-                    </div>
-                </div>
+    <div class="col-md-4">
+        <div class="card subasta-card">
+            <!-- Imagen genérica si no hay una columna 'imagen' en la base de datos -->
+            <img src="/static/images/default.png" class="card-img-top subasta-img" alt="Producto en Subasta">
+            <div class="card-body">
+                <!-- Muestra el ID de la subasta -->
+                <h5 class="card-title">Subasta #{{ subasta.id_subasta }}</h5>
+                
+                <!-- Muestra el nombre y apellido del organizador -->
+                <p class="card-text">Organizador: <strong>{{ subasta.nombre }} {{ subasta.apellido }}</strong></p>
+                
+                <!-- Muestra el tipo de moneda -->
+                <p class="card-text">Tipo de Moneda: <strong>{{ subasta.tipo_moneda }}</strong></p>
+                
+                <!-- Muestra la hora de inicio y final en un formato amigable -->
+                <p class="card-text">Hora de Inicio: {{ subasta.hora_inicio }}</p>
+                <p class="card-text">Hora de Finalización: {{ subasta.hora_final }}</p>
+                
+                <!-- Botón para ver detalles de la subasta -->
+                <a href="{{ url_for('detalle_subasta', subasta_id=subasta.id_subasta) }}" class="btn btn-pujar btn-block">Ver Subasta</a>
             </div>
-            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+
         </div>
     </div>
 

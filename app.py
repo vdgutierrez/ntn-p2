@@ -32,8 +32,14 @@ def explorar_subastas():
     cursor = conexion.cursor(dictionary=True)
 
     # Consulta para obtener subastas
-    cursor.execute("SELECT * FROM subasta")
+    cursor.execute('''SELECT s.id_subasta, s.hora_inicio, s.hora_final, m.tipo_moneda, p.nombre, p.apellido 
+                      FROM subasta s, tipo_moneda m, organizador o, persona p
+                      WHERE s.organizador_id = o.id_organizador
+                      AND s.tipo_moneda_id = m.id_tipo_moneda
+                      AND o.persona_id = p.id_persona''')
+
     subastas = cursor.fetchall()
+    print(subastas)
 
     conexion.close()
     return render_template('cliente/explorar_subastas.html', subastas=subastas)
