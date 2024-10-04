@@ -95,7 +95,7 @@ def detalle_subasta(subasta_id):
 
     #Obtener categoria y nombre
     cursor.execute(
-        '''SELECT c.nombre_categoria, p.nombre
+        '''SELECT c.nombre_categoria, p.nombre, p.descripcion
            FROM subasta_producto sp, subasta s, producto p, categoria c 
            WHERE subasta_id = %s 
            AND s.id_subasta = sp.subasta_id
@@ -104,10 +104,23 @@ def detalle_subasta(subasta_id):
            LIMIT 1''', (subasta_id,))
     categoria = cursor.fetchone()
 
+    #Obtener cliente pujador
+    cursor.execute(
+        '''SELECT pe.nombre, pe.apellido
+           FROM subasta_producto sp, subasta s, puja p, cliente c, persona pe
+           WHERE subasta_id = %s 
+           AND s.id_subasta = sp.subasta_id
+           AND sp.id_subasta_producto = p.subasta_producto_id
+           AND p.cliente_id = c.id_cliente
+           AND c.persona_id = pe.id_persona
+           LIMIT 1''', (subasta_id,))
+    nombre = cursor.fetchone()
+    nombre_completo = nombre['nombre']+' '+nombre['apellido']
+
     if request.method == 'POST':
         nueva_puja = float(request.form['monto'])
         # Verificar si la nueva puja es mayor que el precio actual de la subasta
-        if nueva_puja > subasta['precio_actual']:
+        if nueva_puja > ultima_puja['precio_puja']:
             # Obtener el `id_subasta_producto` correspondiente para esta subasta
             cursor.execute(
                 '''SELECT sp.id_subasta_producto 
@@ -134,7 +147,7 @@ def detalle_subasta(subasta_id):
             return "La puja debe ser mayor al precio actual", 400
 
     conexion.close()
-    return render_template('cliente/detalle_subasta.html', subasta=subasta, historial_pujas=historial_pujas, precio_inicial=precio_inicial, categoria=categoria, puja=ultima_puja)
+    return render_template('cliente/detalle_subasta.html', subasta=subasta, historial_pujas=historial_pujas, precio_inicial=precio_inicial, categoria=categoria, puja=ultima_puja, nombre=nombre_completo)
 
 # Ruta para el historial de subastas del cliente
 

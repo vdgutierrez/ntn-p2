@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -47,13 +48,13 @@
                 <!-- Cambia 'categoria' a una variable que exista -->
                 <p>Categoría: <strong>{{ categoria.nombre_categoria or 'Sin Categoría' }}</strong></p>
                 <!-- Descripción del producto -->
-                <p>Descripción: Aquí se mostraría una descripción detallada del producto si está disponible.</p>
+                <p>Descripción: {{categoria.descripcion}}.</p>
                 <!-- Cambia 'precio_inicial' y 'precio_actual' si las variables no coinciden -->
                 <p>Precio Inicial: ${{ precio_inicial.precio_inicial or 0.00 }}</p>
                 <p>Precio Actual: <span class="text-success">${{ puja.precio_puja or 0.00 }}</span></p>
 
                 <!-- Formulario para realizar una puja -->
-                <form action="{{ url_for('detalle_subasta', subasta_id=subasta.id_subasta) }}" method="POST" class="mt-4">
+                <form id="pujaForm" action="{{ url_for('detalle_subasta', subasta_id=subasta.id_subasta) }}" method="POST" class="mt-4">
                     <div class="form-group">
                         <label for="monto">Hacer una nueva puja:</label>
                         <!-- Ajusta el mínimo para que sea mayor al precio actual -->
@@ -78,7 +79,7 @@
                     {% for puja in historial_pujas %}
                     <tr>
                         <!-- Si el 'pujador' no existe en la tabla, cambia por un identificador válido -->
-                        <td>{{ puja.pujador or 'Cliente Desconocido' }}</td>
+                        <td>{{ nombre or 'Cliente Desconocido' }}</td>
                         <!-- Cambia 'monto' por 'precio_puja' si la consulta de la tabla usa otro nombre -->
                         <td>${{ puja.precio_puja }}</td>
                     </tr>
@@ -98,5 +99,28 @@
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script para recargar la página al enviar el formulario -->
+    <script>
+        document.getElementById('pujaForm').onsubmit = function(event) {
+            event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+            const form = event.target; // Obtener el formulario
+
+            // Enviar la solicitud con fetch
+            fetch(form.action, {
+                method: form.method,
+                body: new FormData(form)
+            }).then(response => {
+                if (response.ok) {
+                    // Recargar la página si la respuesta es exitosa
+                    window.location.reload();
+                } else {
+                    console.error('Error en la puja');
+                }
+            }).catch(error => {
+                console.error('Error al enviar la solicitud', error);
+            });
+        };
+    </script>
 </body>
 </html>
