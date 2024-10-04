@@ -38,20 +38,26 @@
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-6">
-                <img src="{{ subasta.imagen }}" alt="{{ subasta.nombre_producto }}" class="subasta-img">
+                <!-- Verifica si 'imagen' existe en la estructura de la subasta -->
+                <img src="{{ subasta.imagen or url_for('static', filename='default_image.jpg') }}" alt="{{ categoria.nombre }}" class="subasta-img">
             </div>
             <div class="col-md-6">
-                <h2>{{ subasta.nombre_producto }}</h2>
-                <p>Categoría: <strong>{{ subasta.categoria }}</strong></p>
+                <!-- Verifica si 'nombre_producto' existe -->
+                <h2>{{ categoria.nombre or 'Producto Desconocido' }}</h2>
+                <!-- Cambia 'categoria' a una variable que exista -->
+                <p>Categoría: <strong>{{ categoria.nombre_categoria or 'Sin Categoría' }}</strong></p>
+                <!-- Descripción del producto -->
                 <p>Descripción: Aquí se mostraría una descripción detallada del producto si está disponible.</p>
-                <p>Precio Inicial: ${{ subasta.precio_inicial }}</p>
-                <p>Precio Actual: <span class="text-success">${{ subasta.precio_actual }}</span></p>
+                <!-- Cambia 'precio_inicial' y 'precio_actual' si las variables no coinciden -->
+                <p>Precio Inicial: ${{ precio_inicial.precio_inicial or 0.00 }}</p>
+                <p>Precio Actual: <span class="text-success">${{ puja.precio_puja or 0.00 }}</span></p>
 
                 <!-- Formulario para realizar una puja -->
-                <form action="{{ url_for('detalle_subasta', subasta_id=subasta.id) }}" method="POST" class="mt-4">
+                <form action="{{ url_for('detalle_subasta', subasta_id=subasta.id_subasta) }}" method="POST" class="mt-4">
                     <div class="form-group">
                         <label for="monto">Hacer una nueva puja:</label>
-                        <input type="number" name="monto" id="monto" class="form-control puja-input" placeholder="Introduce tu puja" min="{{ subasta.precio_actual + 1 }}" step="0.01" required>
+                        <!-- Ajusta el mínimo para que sea mayor al precio actual -->
+                        <input type="number" name="monto" id="monto" class="form-control puja-input" placeholder="Introduce tu puja" min="{{ puja.precio_puja + 1 }}" step="0.01" required>
                     </div>
                     <button type="submit" class="btn btn-puja btn-block">Pujar</button>
                 </form>
@@ -71,8 +77,10 @@
                 <tbody>
                     {% for puja in historial_pujas %}
                     <tr>
-                        <td>{{ puja.pujador }}</td>
-                        <td>${{ puja.monto }}</td>
+                        <!-- Si el 'pujador' no existe en la tabla, cambia por un identificador válido -->
+                        <td>{{ puja.pujador or 'Cliente Desconocido' }}</td>
+                        <!-- Cambia 'monto' por 'precio_puja' si la consulta de la tabla usa otro nombre -->
+                        <td>${{ puja.precio_puja }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

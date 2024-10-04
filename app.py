@@ -53,30 +53,88 @@ def detalle_subasta(subasta_id):
     cursor = conexion.cursor(dictionary=True)
 
     # Obtener detalles de la subasta
-    cursor.execute("SELECT * FROM subastas WHERE id = %s", (subasta_id,))
+    cursor.execute('''SELECT s.id_subasta, s.hora_inicio, s.hora_final, m.tipo_moneda, p.nombre, p.apellido 
+                      FROM subasta s, tipo_moneda m, organizador o, persona p
+                      WHERE s.organizador_id = o.id_organizador
+                      AND s.tipo_moneda_id = m.id_tipo_moneda
+                      AND o.persona_id = p.id_persona 
+                      AND s.id_subasta = %s''', (subasta_id,))
     subasta = cursor.fetchone()
 
     if not subasta:
         return "Subasta no encontrada", 404
+    
+    #Obtener la ultima puja
+    cursor.execute(
+        '''SELECT p.id_puja, p.subasta_producto_id, p.cliente_id, p.precio_puja, p.hora 
+           FROM puja p, subasta_producto sp, subasta s 
+           WHERE subasta_id = %s 
+           AND s.id_subasta = sp.subasta_id
+           AND sp.id_subasta_producto = p.subasta_producto_id
+           ORDER BY p.precio_puja DESC LIMIT 1''', (subasta_id,))
+    ultima_puja = cursor.fetchone()
+
+    #Obtener el precio inicial
+    cursor.execute(
+        '''SELECT sp.precio_inicial 
+           FROM subasta_producto sp, subasta s 
+           WHERE subasta_id = %s 
+           AND s.id_subasta = sp.subasta_id
+           LIMIT 1''', (subasta_id,))
+    precio_inicial = cursor.fetchone()
 
     # Obtener el historial de pujas de la subasta
     cursor.execute(
-        "SELECT * FROM pujas WHERE subasta_id = %s ORDER BY monto DESC", (subasta_id,))
+        '''SELECT p.id_puja, p.subasta_producto_id, p.cliente_id, p.precio_puja, p.hora 
+           FROM puja p, subasta_producto sp, subasta s 
+           WHERE subasta_id = %s 
+           AND s.id_subasta = sp.subasta_id
+           AND sp.id_subasta_producto = p.subasta_producto_id
+           ORDER BY p.precio_puja DESC''', (subasta_id,))
     historial_pujas = cursor.fetchall()
+
+    #Obtener categoria y nombre
+    cursor.execute(
+        '''SELECT c.nombre_categoria, p.nombre
+           FROM subasta_producto sp, subasta s, producto p, categoria c 
+           WHERE subasta_id = %s 
+           AND s.id_subasta = sp.subasta_id
+           AND sp.producto_id = p.id_producto
+           AND p.categoria_id = c.id_categoria
+           LIMIT 1''', (subasta_id,))
+    categoria = cursor.fetchone()
 
     if request.method == 'POST':
         nueva_puja = float(request.form['monto'])
+        # Verificar si la nueva puja es mayor que el precio actual de la subasta
         if nueva_puja > subasta['precio_actual']:
-            cursor.execute("INSERT INTO pujas (subasta_id, pujador, monto) VALUES (%s, %s, %s)",
-                           (subasta_id, 'Cliente', nueva_puja))
+            # Obtener el `id_subasta_producto` correspondiente para esta subasta
             cursor.execute(
-                "UPDATE subastas SET precio_actual = %s WHERE id = %s", (nueva_puja, subasta_id))
+                '''SELECT sp.id_subasta_producto 
+                   FROM subasta_producto sp 
+                   WHERE sp.subasta_id = %s''', (subasta_id,))
+            subasta_producto = cursor.fetchone()
+
+            if not subasta_producto:
+                conexion.close()
+                return "Producto de la subasta no encontrado", 404
+
+            subasta_producto_id = subasta_producto['id_subasta_producto']
+
+            # Insertar la nueva puja en la tabla `puja`
+            cursor.execute(
+                "INSERT INTO puja (subasta_producto_id, cliente_id, precio_puja, hora) VALUES (%s, %s, %s, NOW())",
+                (subasta_producto_id, 1, nueva_puja))  
+            #TODO Cambiar id Cliente por el actual
+            # Actualizar el precio actual de la subasta
+            #cursor.execute("UPDATE subasta SET precio_actual = %s WHERE id_subasta = %s", (nueva_puja, subasta_id))
             conexion.commit()
         else:
+            conexion.close()
             return "La puja debe ser mayor al precio actual", 400
 
     conexion.close()
-    return render_template('cliente/detalle_subasta.html', subasta=subasta, historial_pujas=historial_pujas)
+    return render_template('cliente/detalle_subasta.html', subasta=subasta, historial_pujas=historial_pujas, precio_inicial=precio_inicial, categoria=categoria, puja=ultima_puja)
 
 # Ruta para el historial de subastas del cliente
 
