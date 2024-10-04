@@ -36,23 +36,7 @@
     </div>
 
     <!-- Lista de Subastas Activas -->
-    <div class="container mt-5">
-        <h3>Subastas Activas</h3>
-        <div class="row">
-            {% for subasta in subastas %}
-            <div class="col-md-4">
-                <div class="card">
-                    <img src="{{ subasta.imagen }}" class="card-img-top" alt="Producto en Subasta">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ subasta.nombre_producto }}</h5>
-                        <p class="card-text">Precio actual: ${{ subasta.precio_actual }}</p>
-                        <a href="{{ url_for('detalle_subasta', subasta_id=subasta.id) }}" class="btn btn-primary">Ver Subasta</a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+   
 
     <!-- Footer -->
     <footer class="footer mt-5">

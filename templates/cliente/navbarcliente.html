@@ -10,17 +10,18 @@
                     <a href="{{ url_for('cliente_dashboard') }}" class="nav-link">Inicio Subastador</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ url_for('explorar_subastas') }}" class="nav-link">explorar subastas</a>
+                    <a href="{{ url_for('explorar_subastas') }}" class="nav-link">Explorar Subastas</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ url_for('historial_subastas_cliente') }}" class="nav-link">historial</a>
+                    <a href="{{ url_for('historial_subastas_cliente') }}" class="nav-link">Historial</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ url_for('perfil_cliente') }}" class="nav-link">Perfil usuario</a>
+                    <a href="{{ url_for('perfil_cliente') }}" class="nav-link">Perfil Usuario</a>
                 </li>
             </ul>
             <div class="ml-auto">
-                <a href="{{ url_for('index') }}" class="btn btn-outline-primary">Inicio</a>
+                <a href="{{ url_for('cliente_dashboard') }}" class="btn btn-outline-primary">Inicio</a>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-primary">Cerrar Sesión</a>
             </div>
         </div>
     </div>

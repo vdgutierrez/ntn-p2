@@ -149,38 +149,35 @@ def detalle_subasta(subasta_id):
     conexion.close()
     return render_template('cliente/detalle_subasta.html', subasta=subasta, historial_pujas=historial_pujas, precio_inicial=precio_inicial, categoria=categoria, puja=ultima_puja, nombre=nombre_completo)
 
-# Ruta para el historial de subastas del cliente
-
-
+#TODO Ruta para el historial de subastas del cliente
 @app.route('/cliente/historial-subastas')
 def historial_subastas_cliente():
-    conexion = db_connection()
-    cursor = conexion.cursor(dictionary=True)
+    # conexion = db_connection()
+    # cursor = conexion.cursor(dictionary=True)
 
-    # Consulta para obtener el historial de subastas del cliente
-    # Suponiendo cliente con ID 1
-    cursor.execute("SELECT * FROM subastas WHERE comprador_id = 1")
-    historial = cursor.fetchall()
+    # # Consulta para obtener el historial de subastas del cliente
+    # # Suponiendo cliente con ID 1
+    # cursor.execute("SELECT * FROM subastas WHERE comprador_id = 1")
+    # historial = cursor.fetchall()
 
-    conexion.close()
-    return render_template('cliente/historial_subasta_cliente.html', historial=historial)
+    # conexion.close()
+    #return render_template('cliente/historial_subasta_cliente.html', historial=historial)
+    return render_template('cliente/historial_subasta_cliente.html')
 
-# TODO arreglar query
-# Ruta para ver el perfil del cliente
-
-
+#TODO Perfil cliente
 @app.route('/cliente/perfil')
 def perfil_cliente():
-    conexion = db_connection()
-    cursor = conexion.cursor(dictionary=True)
+    # conexion = db_connection()
+    # cursor = conexion.cursor(dictionary=True)
 
-    # Consulta para obtener datos del cliente
-    # Suponiendo cliente con ID 1
-    cursor.execute("SELECT * FROM clientes WHERE id = 1")
-    cliente = cursor.fetchone()
+    # # Consulta para obtener datos del cliente
+    # # Suponiendo cliente con ID 1
+    # cursor.execute("SELECT * FROM clientes WHERE id = 1")
+    # cliente = cursor.fetchone()
 
-    conexion.close()
-    return render_template('cliente/perfil_cliente.html', cliente=cliente)
+    # conexion.close()
+    #return render_template('cliente/perfil_cliente.html', cliente=cliente)
+    return render_template('cliente/perfil_cliente.html')
 
 # Ruta para gestionar productos del subastador
 
