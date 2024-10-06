@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Producto</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fff;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #333; /* Color gris oscuro */
+            padding: 10px 20px;
+        }
+
+        .navbar a {
+            color: #fff; /* Texto en blanco */
+            margin-right: 15px;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 24px;
+            color: #f9c74f; /* Amarillo */
+        }
+
+        .navbar a:hover {
+            color: #f9c74f; /* Hover amarillo */
+        }
+
+        .container {
+            margin-top: 40px;
+        }
+
+        .card {
+            background-color: #fff;
+            border: 1px solid #f9c74f;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .card-header {
+            background-color: #f9c74f; /* Encabezado amarillo */
+            color: #333;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .btn {
+            background-color: #f9c74f;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #e5b93c; /* Hover para el botón */
+            color: #fff;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .message.error {
+            color: red;
+            border: 1px solid red;
+            background-color: #ffe5e5;
+        }
+
+        .message.success {
+            color: green;
+            border: 1px solid green;
+            background-color: #e5ffe5;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-brand">Mi Aplicación</div>
+        <a href="#">Inicio</a>
+        <a href="#">Productos</a>
+        <a href="#">Subastas</a>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">Agregar Producto</div>
+            
+            <!-- Mostrar mensaje si existe -->
+            {% if message %}
+                <div class="message {{ message_type }}">
+                    {{ message }}
+                </div>
+            {% endif %}
+            
+            <form method="POST">
+                <label for="nombre">Nombre del Producto:</label><br>
+                <input type="text" id="nombre" name="nombre" required><br><br>
+
+                <!-- Otros campos aquí si los necesitas -->
+                
+                <input type="submit" value="Agregar Producto" class="btn">
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
