@@ -469,7 +469,21 @@ def insert_subastador(name, lastname, id_perfil):
     finally:
         cursor.close()
         conexion.close()
+@app.route('/subastador/agregar-producto', methods=['GET', 'POST'])
+def agregar_producto():
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
 
+        if not nombre:
+            message = "Faltan datos obligatorios"
+            message_type = "error"
+            return render_template('subastador/agregar_producto.html', message=message, message_type=message_type)
+        
+        message = "Producto agregado correctamente"
+        message_type = "success"
+        return render_template('subastador/agregar_producto.html', message=message, message_type=message_type)
+
+    return render_template('subastador/agregar_producto.html')
 
 # Iniciar el servidor Flask
 if __name__ == '__main__':
