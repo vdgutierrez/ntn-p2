@@ -539,6 +539,54 @@ def crear_subasta():
         return redirect(url_for('crear_subasta'))
 
     return render_template('subastador/crear_subasta.html')
+
+
+# Ruta para listar productos del subastador
+@app.route('/subastador/productos')
+def listar_productos():
+    productos = Producto.query.all()  # Obtiene todos los productos de la base de datos
+    return render_template('subastador/listar_productos.html', productos=productos)
+
+# Ruta para agregar un nuevo producto
+@app.route('/subastador/productos/agregar', methods=['GET', 'POST'])
+def agregar_producto():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        descripcion = request.form['descripcion']
+        precio = request.form['precio']
+
+        nuevo_producto = Producto(nombre=nombre, descripcion=descripcion, precio=precio)
+        db.session.add(nuevo_producto)  # Agrega el nuevo producto a la base de datos
+        db.session.commit()
+        flash('Producto agregado exitosamente')
+        return redirect(url_for('listar_productos'))
+
+    return render_template('subastador/agregar_producto.html')
+
+# Ruta para modificar un producto existente
+@app.route('/subastador/productos/modificar/<int:id>', methods=['GET', 'POST'])
+def modificar_producto(id):
+    producto = Producto.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        producto.nombre = request.form['nombre']
+        producto.descripcion = request.form['descripcion']
+        producto.precio = request.form['precio']
+        
+        db.session.commit()  # Guarda los cambios en la base de datos
+        flash('Producto modificado exitosamente')
+        return redirect(url_for('listar_productos'))
+    
+    return render_template('subastador/modificar_producto.html', producto=producto)
+
+# Ruta para borrar un producto
+@app.route('/subastador/productos/borrar/<int:id>', methods=['POST'])
+def borrar_producto(id):
+    producto = Producto.query.get_or_404(id)
+    db.session.delete(producto)  # Elimina el producto de la base de datos
+    db.session.commit()
+    flash('Producto borrado exitosamente')
+    return redirect(url_for('listar_productos'))
 if __name__ == '__main__':
     app.run(debug=True)
 
