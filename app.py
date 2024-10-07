@@ -394,10 +394,10 @@ def register():
 
     return render_template('register.html')
 
-
 def insert_perfil(name, lastname, email, password, tipo, phone):
     conexion = db_connection()
     if conexion is None:
+        print("Error: No se pudo establecer la conexión con la base de datos.")
         return
     try:
         cursor = conexion.cursor()
@@ -410,19 +410,23 @@ def insert_perfil(name, lastname, email, password, tipo, phone):
         conexion.commit()
 
         id_persona = cursor.lastrowid  # Obtiene el ID de la persona insertada
+        print(f"Persona insertada con ID: {id_persona}")
 
         # Inserción en la tabla cliente u organizador según el tipo de usuario
-        if tipo == 'cliente' or 'Cliente':
+        if tipo == 'Cliente':
             cursor.execute(
                 "INSERT INTO cliente (contrasena, persona_id) VALUES (%s, %s)",
                 (password, id_persona)
             )
-        elif tipo == 'subastador' or 'Subastador':
+            print("Cliente insertado correctamente.")
+        elif tipo == 'Subastador':
             cursor.execute(
                 "INSERT INTO organizador (usuario, contrasena, persona_id) VALUES (%s, %s, %s)",
-                (f"{name} {lastname}", password, id_persona)
+                (f'{name} {lastname}', password, id_persona)
             )
+            print("Subastador insertado correctamente.")
         else:
+            print("Tipo de usuario no válido.")
             return "Tipo de usuario no válido", 400
 
         conexion.commit()

@@ -5,10 +5,10 @@ def db_connection():
     try:
         conexion = mysql.connect(
             host="localhost",
-            user="root1",
-            password="12345678",
+            user="root",
+            password="",
             database="Proyecto2",
-            port=3308
+            port=3306
         )
         if conexion.is_connected():
             print("Conexión exitosa")
