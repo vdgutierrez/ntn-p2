@@ -179,6 +179,12 @@ def perfil_cliente():
     #return render_template('cliente/perfil_cliente.html', cliente=cliente)
     return render_template('cliente/perfil_cliente.html')
 
+# Ruta para PREGUNTAS FRECEUNTES
+@app.route('/FAQ')
+def faq():
+    return render_template('FAQ.html')
+
+
 # Ruta para gestionar productos del subastador
 
 
