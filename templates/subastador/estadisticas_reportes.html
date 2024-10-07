@@ -13,7 +13,7 @@
     {% include 'subastador/navbarsub.html' %}
 
     <!-- Filtros de Fecha -->
-    <div class="container mt-5">
+    <div class="container mt-5" id="">
         <div class="card">
             <div class="card-header">Filtros de Fecha</div>
             <div class="card-body">
@@ -25,44 +25,52 @@
                     <div class="form-group">
                         <label for="fechaFin">Fecha de Fin</label>
                         <input type="date" class="form-control" id="fechaFin" name="fechaFin">
+                    </div>                 
+                    <div class="form-group">
+                        <label for="producto">Producto</label>
+                        <select class="form-control" id="producto" name="producto">
+                            <option value="">Todos</option>
+                            <option value="Producto A">REFERENCIAL A</option>
+                            <option value="Producto B">REFERENCIAL B</option>
+                        </select>
                     </div>
-                    <button type="submit" class="btn btn-primary">Generar Reporte</button>
+                    <button type="button" class="btn btn-primary" id="buttonGenerar">Generar Reporte</button>
                 </form>
             </div>
         </div>
     </div>
-
+    
     <!-- Sección de Gráficos -->
-    <div class="container mt-5">
+    <div class="container mt-5" id="g2">
         <div class="row">
             <!-- Gráfico de Ingresos Generados -->
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">Ingresos Generados</div>
                     <div class="card-body">
-                        <canvas id="ingresosChart"></canvas>
+                        <canvas id="ingresosChart" style="display: none;"></canvas>
                     </div>
                 </div>
             </div>
 
             <!-- Productos Más Vendidos -->
-            <div class="col-md-6">
+            <div class="col-md-6" id="g3">
                 <div class="card">
                     <div class="card-header">Productos Más Vendidos</div>
                     <div class="card-body">
-                        <canvas id="productosVendidosChart"></canvas>
+                        <canvas id="productosVendidosChart" style="display: none;"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mt-5">
+        <div class="row mt-5" id="g4">
             <!-- Actividad de los Clientes -->
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">Clientes Más Activos</div>
                     <div class="card-body">
-                        <canvas id="clientesActivosChart"></canvas>
+                        <canvas id="clientesActivosChart" style="display: none;"></canvas>
                     </div>
                 </div>
             </div>
@@ -72,7 +80,7 @@
                 <div class="card">
                     <div class="card-header">Subastas Activas vs. Finalizadas</div>
                     <div class="card-body">
-                        <canvas id="subastasChart"></canvas>
+                        <canvas id="subastasChart" style="display: none;"></canvas>
                     </div>
                 </div>
             </div>
@@ -160,7 +168,34 @@
             }
         });
     </script>
+    <script>
+        //script modificacion
+        document.getElementById('filtroFecha').addEventListener('submit', function(event) {
+            var fechaInicio = document.getElementById('fechaInicio').value;
+            var fechaFin = document.getElementById('fechaFin').value;
+            if (fechaInicio && fechaFin && fechaInicio > fechaFin) {
+                event.preventDefault();
+                alert('La fecha de inicio no puede ser mayor que la fecha de fin');
+            }
+        });
+    </script>
+    <script>
+        let inputInicio = document.querySelector("#fechaInicio").value;
+        let inputFin = document.querySelector("#fechaFin").value;
+        let buttonGenerar= document.querySelector("#buttonGenerar");
+        buttonGenerar.addEventListener("click",function(){
+        if(!fechaInicio||!fechaFin)
+        {
+            document.getElementById('ingresosChart').style.display = 'block';
+            document.getElementById('productosVendidosChart').style.display = 'block';
+            document.getElementById('clientesActivosChart').style.display = 'block';
+            document.getElementById('subastasChart').style.display = 'block';
+        }
+        else{alert("Debe llenar las fechas");}
+        });
 
+
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
