@@ -1,37 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle de Subasta - {{ subasta.nombre_producto }}</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <style>
-        .subasta-img {
-            width: 100%;
-            max-height: 400px;
-            object-fit: cover;
-        }
-        .puja-input {
-            width: 100%;
-            padding: 10px;
-            font-size: 1.2rem;
-        }
-        .btn-puja {
-            background-color: #28a745;
-            color: white;
-        }
-        .btn-puja:hover {
-            background-color: #218838;
-        }
-        .historial-table {
-            margin-top: 30px;
-        }
-    </style>
+    <title>Detalle de la Subasta</title>
+    <link rel="stylesheet" href="path/to/your/css/styles.css">
 </head>
 <body>
-
     <!-- Navbar -->
     {% include 'cliente/navbarcliente.html' %}
 
@@ -40,7 +15,7 @@
         <div class="row">
             <div class="col-md-6">
                 <!-- Verifica si 'imagen' existe en la estructura de la subasta -->
-                <img src="{{ subasta.imagen or url_for('static', filename='default_image.jpg') }}" alt="{{ categoria.nombre }}" class="subasta-img">
+                <img src="{{ subasta.imagen or url_for('static', filename='default_image.jpg') }}" alt="{{ categoria.nombre or 'Producto' }}" class="subasta-img">
             </div>
             <div class="col-md-6">
                 <!-- Verifica si 'nombre_producto' existe -->
@@ -48,17 +23,16 @@
                 <!-- Cambia 'categoria' a una variable que exista -->
                 <p>Categoría: <strong>{{ categoria.nombre_categoria or 'Sin Categoría' }}</strong></p>
                 <!-- Descripción del producto -->
-                <p>Descripción: {{categoria.descripcion}}.</p>
+                <p>Descripción: {{ categoria.descripcion or 'Sin Descripción' }}.</p>
                 <!-- Cambia 'precio_inicial' y 'precio_actual' si las variables no coinciden -->
                 <p>Precio Inicial: ${{ precio_inicial.precio_inicial or 0.00 }}</p>
-                <p>Precio Actual: <span class="text-success">${{ puja.precio_puja or 0.00 }}</span></p>
+                <p>Precio Actual: <span class="text-success">${{ puja.precio_puja if puja else 0.00 }}</span></p>
 
                 <!-- Formulario para realizar una puja -->
                 <form id="pujaForm" action="{{ url_for('detalle_subasta', subasta_id=subasta.id_subasta) }}" method="POST" class="mt-4">
                     <div class="form-group">
                         <label for="monto">Hacer una nueva puja:</label>
-                        <!-- Ajusta el mínimo para que sea mayor al precio actual -->
-                        <input type="number" name="monto" id="monto" class="form-control puja-input" placeholder="Introduce tu puja" min="{{ puja.precio_puja + 1 }}" step="0.01" required>
+                        <input type="number" name="monto" id="monto" class="form-control puja-input" placeholder="Introduce tu puja" min="{{ (puja.precio_puja if puja else precio_inicial.precio_inicial) + 1 }}" step="0.01" required>
                     </div>
                     <button type="submit" class="btn btn-puja btn-block">Pujar</button>
                 </form>
@@ -66,22 +40,22 @@
         </div>
 
         <!-- Historial de Pujas -->
-        <div class="historial-table">
+        <div class="historial-table mt-5">
             <h3>Historial de Pujas</h3>
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Pujador</th>
+                        <th>Cliente</th>
                         <th>Monto</th>
+                        <th>Hora</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for puja in historial_pujas %}
                     <tr>
-                        <!-- Si el 'pujador' no existe en la tabla, cambia por un identificador válido -->
-                        <td>{{ nombre or 'Cliente Desconocido' }}</td>
-                        <!-- Cambia 'monto' por 'precio_puja' si la consulta de la tabla usa otro nombre -->
+                        <td>{{ puja.cliente_id }}</td>
                         <td>${{ puja.precio_puja }}</td>
+                        <td>{{ puja.hora }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -89,38 +63,29 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer mt-5">
-        <div class="container text-center">
-            <p>&copy; 2024 SubasTEITOR. Todos los derechos reservados.</p>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Script para recargar la página al enviar el formulario -->
+    <script src="path/to/your/js/scripts.js"></script>
     <script>
-        document.getElementById('pujaForm').onsubmit = function(event) {
-            event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
-            const form = event.target; // Obtener el formulario
-
-            // Enviar la solicitud con fetch
-            fetch(form.action, {
-                method: form.method,
-                body: new FormData(form)
-            }).then(response => {
-                if (response.ok) {
-                    // Recargar la página si la respuesta es exitosa
-                    window.location.reload();
-                } else {
-                    console.error('Error en la puja');
-                }
-            }).catch(error => {
-                console.error('Error al enviar la solicitud', error);
+        $(document).ready(function() {
+            $('#pujaForm').on('submit', function(event) {
+                event.preventDefault();
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: $(this).attr('method'),
+                    data: formData,
+                    success: function(response) {
+                        // Actualizar el historial de pujas y el precio actual
+                        $('#historial-pujas').html($(response).find('#historial-pujas').html());
+                        $('#precio-actual').text($(response).find('#precio-actual').text());
+                        $('#monto').val('');
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Error: ' + xhr.responseText);
+                    }
+                });
             });
-        };
+        });
     </script>
+    
 </body>
 </html>

@@ -1,8 +1,32 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from db import *
 
 app = Flask(__name__)
 app.secret_key = 'Arqui123'
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+# Modelo de usuario
+class User(UserMixin):
+    def __init__(self, id, username):
+        self.id = id
+        self.username = username
+
+@login_manager.user_loader
+def load_user(user_id):
+    conexion = db_connection()
+    cursor = conexion.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM organizador WHERE id_organizador = %s", (user_id,))
+    user_data = cursor.fetchone()
+    cursor.close()
+    conexion.close()
+    if user_data:
+        return User(user_data['id_organizador'], user_data['usuario'])
+    return None
+
 
 # Lista temporal de productos (esto debería provenir de la base de datos)
 productos = [
@@ -47,107 +71,135 @@ def explorar_subastas():
 # Ruta para ver el detalle de una subasta
 
 
+
 @app.route('/cliente/detalle-subasta/<int:subasta_id>', methods=['GET', 'POST'])
+@login_required
 def detalle_subasta(subasta_id):
     conexion = db_connection()
     cursor = conexion.cursor(dictionary=True)
 
     # Obtener detalles de la subasta
     cursor.execute('''SELECT s.id_subasta, s.hora_inicio, s.hora_final, m.tipo_moneda, p.nombre, p.apellido 
-                      FROM subasta s, tipo_moneda m, organizador o, persona p
-                      WHERE s.organizador_id = o.id_organizador
-                      AND s.tipo_moneda_id = m.id_tipo_moneda
-                      AND o.persona_id = p.id_persona 
-                      AND s.id_subasta = %s''', (subasta_id,))
+                      FROM subasta s
+                      JOIN tipo_moneda m ON s.tipo_moneda_id = m.id_tipo_moneda
+                      JOIN organizador o ON s.organizador_id = o.id_organizador
+                      JOIN persona p ON o.persona_id = p.id_persona 
+                      WHERE s.id_subasta = %s''', (subasta_id,))
     subasta = cursor.fetchone()
+    cursor.fetchall()  # Asegúrate de que todos los resultados se hayan leído
 
     if not subasta:
+        cursor.close()
+        conexion.close()
         return "Subasta no encontrada", 404
     
-    #Obtener la ultima puja
+    # Obtener la última puja
     cursor.execute(
         '''SELECT p.id_puja, p.subasta_producto_id, p.cliente_id, p.precio_puja, p.hora 
-           FROM puja p, subasta_producto sp, subasta s 
-           WHERE subasta_id = %s 
-           AND s.id_subasta = sp.subasta_id
-           AND sp.id_subasta_producto = p.subasta_producto_id
+           FROM puja p
+           JOIN subasta_producto sp ON p.subasta_producto_id = sp.id_subasta_producto
+           JOIN subasta s ON sp.subasta_id = s.id_subasta
+           WHERE s.id_subasta = %s 
            ORDER BY p.precio_puja DESC LIMIT 1''', (subasta_id,))
     ultima_puja = cursor.fetchone()
+    cursor.fetchall()  # Asegúrate de que todos los resultados se hayan leído
 
-    #Obtener el precio inicial
+    # Obtener el precio inicial
     cursor.execute(
         '''SELECT sp.precio_inicial 
-           FROM subasta_producto sp, subasta s 
-           WHERE subasta_id = %s 
-           AND s.id_subasta = sp.subasta_id
+           FROM subasta_producto sp
+           JOIN subasta s ON sp.subasta_id = s.id_subasta
+           WHERE s.id_subasta = %s 
            LIMIT 1''', (subasta_id,))
     precio_inicial = cursor.fetchone()
+    cursor.fetchall()  # Asegúrate de que todos los resultados se hayan leído
 
     # Obtener el historial de pujas de la subasta
     cursor.execute(
         '''SELECT p.id_puja, p.subasta_producto_id, p.cliente_id, p.precio_puja, p.hora 
-           FROM puja p, subasta_producto sp, subasta s 
-           WHERE subasta_id = %s 
-           AND s.id_subasta = sp.subasta_id
-           AND sp.id_subasta_producto = p.subasta_producto_id
+           FROM puja p
+           JOIN subasta_producto sp ON p.subasta_producto_id = sp.id_subasta_producto
+           JOIN subasta s ON sp.subasta_id = s.id_subasta
+           WHERE s.id_subasta = %s 
            ORDER BY p.precio_puja DESC''', (subasta_id,))
     historial_pujas = cursor.fetchall()
+    cursor.fetchall()  # Asegúrate de que todos los resultados se hayan leído
 
-    #Obtener categoria y nombre
+    # Obtener categoría y nombre del producto
     cursor.execute(
         '''SELECT c.nombre_categoria, p.nombre, p.descripcion
-           FROM subasta_producto sp, subasta s, producto p, categoria c 
-           WHERE subasta_id = %s 
-           AND s.id_subasta = sp.subasta_id
-           AND sp.producto_id = p.id_producto
-           AND p.categoria_id = c.id_categoria
+           FROM subasta_producto sp
+           JOIN subasta s ON sp.subasta_id = s.id_subasta
+           JOIN producto p ON sp.producto_id = p.id_producto
+           JOIN categoria c ON p.categoria_id = c.id_categoria
+           WHERE s.id_subasta = %s 
            LIMIT 1''', (subasta_id,))
     categoria = cursor.fetchone()
-
-    #Obtener cliente pujador
-    cursor.execute(
-        '''SELECT pe.nombre, pe.apellido
-           FROM subasta_producto sp, subasta s, puja p, cliente c, persona pe
-           WHERE subasta_id = %s 
-           AND s.id_subasta = sp.subasta_id
-           AND sp.id_subasta_producto = p.subasta_producto_id
-           AND p.cliente_id = c.id_cliente
-           AND c.persona_id = pe.id_persona
-           LIMIT 1''', (subasta_id,))
-    nombre = cursor.fetchone()
-    nombre_completo = nombre['nombre']+' '+nombre['apellido']
+    cursor.fetchall()  # Asegúrate de que todos los resultados se hayan leído
 
     if request.method == 'POST':
         nueva_puja = float(request.form['monto'])
         # Verificar si la nueva puja es mayor que el precio actual de la subasta
-        if nueva_puja > ultima_puja['precio_puja']:
+        if nueva_puja > (ultima_puja['precio_puja'] if ultima_puja else precio_inicial['precio_inicial']):
             # Obtener el `id_subasta_producto` correspondiente para esta subasta
             cursor.execute(
                 '''SELECT sp.id_subasta_producto 
                    FROM subasta_producto sp 
                    WHERE sp.subasta_id = %s''', (subasta_id,))
             subasta_producto = cursor.fetchone()
+            cursor.fetchall()  # Asegúrate de que todos los resultados se hayan leído
 
             if not subasta_producto:
+                cursor.close()
                 conexion.close()
                 return "Producto de la subasta no encontrado", 404
 
             subasta_producto_id = subasta_producto['id_subasta_producto']
 
+            # Obtener el ID del cliente autenticado directamente desde current_user
+            cliente_id = current_user.id  # Usa el atributo correcto del modelo de usuario
+
             # Insertar la nueva puja en la tabla `puja`
             cursor.execute(
                 "INSERT INTO puja (subasta_producto_id, cliente_id, precio_puja, hora) VALUES (%s, %s, %s, NOW())",
-                (subasta_producto_id, 1, nueva_puja))  
-            #TODO Cambiar id Cliente por el actual
-            # Actualizar el precio actual de la subasta
-            #cursor.execute("UPDATE subasta SET precio_actual = %s WHERE id_subasta = %s", (nueva_puja, subasta_id))
+                (subasta_producto_id, cliente_id, nueva_puja))
             conexion.commit()
+
+            # Actualizar los datos después de la puja
+            cursor.execute(
+                '''SELECT p.id_puja, p.subasta_producto_id, p.cliente_id, p.precio_puja, p.hora 
+                   FROM puja p
+                   JOIN subasta_producto sp ON p.subasta_producto_id = sp.id_subasta_producto
+                   JOIN subasta s ON sp.subasta_id = s.id_subasta
+                   WHERE s.id_subasta = %s 
+                   ORDER BY p.precio_puja DESC LIMIT 1''', (subasta_id,))
+            ultima_puja = cursor.fetchone()
+            cursor.fetchall()  # Asegúrate de que todos los resultados se hayan leído
+
+            cursor.execute(
+                '''SELECT p.id_puja, p.subasta_producto_id, p.cliente_id, p.precio_puja, p.hora 
+                   FROM puja p
+                   JOIN subasta_producto sp ON p.subasta_producto_id = sp.id_subasta_producto
+                   JOIN subasta s ON sp.subasta_id = s.id_subasta
+                   WHERE s.id_subasta = %s 
+                   ORDER BY p.precio_puja DESC''', (subasta_id,))
+            historial_pujas = cursor.fetchall()
+            cursor.fetchall()  # Asegúrate de que todos los resultados se hayan leído
+
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                cursor.close()
+                conexion.close()
+                return render_template('cliente/detalle_subasta.html', subasta=subasta, historial_pujas=historial_pujas, precio_inicial=precio_inicial, categoria=categoria, puja=ultima_puja)
+
         else:
+            cursor.close()
             conexion.close()
             return "La puja debe ser mayor al precio actual", 400
 
+    cursor.close()
     conexion.close()
-    return render_template('cliente/detalle_subasta.html', subasta=subasta, historial_pujas=historial_pujas, precio_inicial=precio_inicial, categoria=categoria, puja=ultima_puja, nombre=nombre_completo)
+    return render_template('cliente/detalle_subasta.html', subasta=subasta, historial_pujas=historial_pujas, precio_inicial=precio_inicial, categoria=categoria, puja=ultima_puja)
+
 
 #TODO Ruta para el historial de subastas del cliente
 @app.route('/cliente/historial-subastas')
@@ -322,46 +374,55 @@ def notificaciones():
     return render_template('subastador/notificaciones.html', notificaciones=notificaciones)
 
 
-# Ruta para la página de inicio de sesión
+# Ruta de inicio de sesión
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Obtener los datos del formulario
         email = request.form.get('email')
         password = request.form.get('password')
 
-        # Usar la función db_connection() para conectar a la base de datos
         conexion = db_connection()
-        if conexion:
-            print('entraaaaaa')
-            cursor = conexion.cursor(dictionary=True)
+        cursor = conexion.cursor(dictionary=True)
 
-            # Verificar si el usuario existe en la base de datos
-            # Cambiar la consulta en el login para reflejar la estructura correcta de la base de datos
+        # Verificar si el usuario es un organizador
+        cursor.execute('''
+            SELECT o.id_organizador AS id, o.usuario AS username, o.contrasena AS password, 'organizador' AS role
+            FROM organizador o
+            INNER JOIN persona p ON o.persona_id = p.id_persona
+            WHERE p.correo = %s AND o.contrasena = %s
+        ''', (email, password))
+        user_data = cursor.fetchone()
+
+        # Si no es organizador, verificar si es cliente
+        if not user_data:
             cursor.execute('''
-                SELECT cliente.contrasena, persona.correo
-                FROM cliente
-                INNER JOIN persona ON cliente.persona_id = persona.id_persona
-                WHERE persona.correo = %s AND cliente.contrasena = %s
-                ''', (email, password))
-            
-            user = cursor.fetchone()
-            print("usuario encontrado en bd: ",user)
-            conexion.close()  # Cierra la conexión después de la consulta
+                SELECT c.id_cliente AS id, p.nombre AS username, c.contrasena AS password, 'cliente' AS role
+                FROM cliente c
+                INNER JOIN persona p ON c.persona_id = p.id_persona
+                WHERE p.correo = %s AND c.contrasena = %s
+            ''', (email, password))
+            user_data = cursor.fetchone()
 
-            if user:
-                print('finally')
-                return redirect(url_for('explorar_subastas'))
-            else:
-                print('Usuario o contraseña incorrectos. Por favor, inténtalo de nuevo.')
-                flash(
-                    'Usuario o contraseña incorrectos. Por favor, inténtalo de nuevo.', 'error')
-                return redirect(url_for('login'))
+        conexion.close()
+
+        if user_data:
+            user = User(user_data['id'], user_data['username'])
+            login_user(user)
+            if user_data['role'] == 'organizador':
+                return redirect(url_for('crear_subasta'))
+            elif user_data['role'] == 'cliente':
+                return redirect(url_for('cliente_dashboard'))
         else:
-            print('Error al conectar a la base de datos.')
-            flash('Error al conectar a la base de datos.', 'error')
+            flash('Usuario o contraseña incorrectos. Por favor, inténtalo de nuevo.', 'error')
             return redirect(url_for('login'))
     return render_template('login.html')
+
+# Ruta de cierre de sesión
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 # Ruta para la página de registro
 
@@ -490,11 +551,29 @@ def agregar_producto():
     return render_template('subastador/agregar_producto.html')
 
 
+# Ruta protegida para crear subasta
 @app.route('/subastador/crear-subasta', methods=['GET', 'POST'])
+@login_required
 def crear_subasta():
+    conexion = db_connection()
+    if conexion:
+        cursor = conexion.cursor(dictionary=True)
+        cursor.execute("SELECT id_categoria, nombre_categoria FROM categoria")
+        categorias = cursor.fetchall()
+        
+        cursor.execute("SELECT id_tipo_moneda, tipo_moneda FROM tipo_moneda")
+        tipos_moneda = cursor.fetchall()
+        
+        cursor.close()
+        conexion.close()
+    else:
+        categorias = []
+        tipos_moneda = []
+
     if request.method == 'POST':
         hora_inicio = request.form['horaInicio']
         hora_final = request.form['horaFinal']
+        tipo_moneda_id = request.form['tipoMoneda']
 
         nombre_productos = request.form.getlist('nombreProducto[]')
         descripcion_productos = request.form.getlist('descripcionProducto[]')
@@ -507,16 +586,22 @@ def crear_subasta():
             try:
                 # Insertar la subasta
                 cursor.execute(
-                    "INSERT INTO subasta (hora_inicio, hora_final) VALUES (%s, %s)",
-                    (hora_inicio, hora_final)
+                    "INSERT INTO subasta (hora_inicio, hora_final, organizador_id, tipo_moneda_id) VALUES (%s, %s, %s, %s)",
+                    (hora_inicio, hora_final, current_user.id, tipo_moneda_id)
                 )
                 subasta_id = cursor.lastrowid
 
-                # Insertar los productos asociados a la subasta
+                # Insertar los productos y asociarlos a la subasta
                 for nombre_producto, descripcion_producto, categoria_producto, precio_inicial in zip(nombre_productos, descripcion_productos, categoria_productos, precio_iniciales):
                     cursor.execute(
-                        "INSERT INTO producto (nombre, descripcion, categoria, precio_inicial, subasta_id) VALUES (%s, %s, %s, %s, %s)",
-                        (nombre_producto, descripcion_producto, categoria_producto, precio_inicial, subasta_id)
+                        "INSERT INTO producto (nombre, descripcion, categoria_id) VALUES (%s, %s, %s)",
+                        (nombre_producto, descripcion_producto, categoria_producto)
+                    )
+                    producto_id = cursor.lastrowid
+
+                    cursor.execute(
+                        "INSERT INTO subasta_producto (subasta_id, producto_id, precio_inicial) VALUES (%s, %s, %s)",
+                        (subasta_id, producto_id, precio_inicial)
                     )
 
                 conexion.commit()
@@ -532,8 +617,9 @@ def crear_subasta():
 
         return redirect(url_for('crear_subasta'))
 
-    return render_template('subastador/crear_subasta.html')
+    return render_template('subastador/crear_subasta.html', categorias=categorias, tipos_moneda=tipos_moneda)
+
+# Otras rutas...
+
 if __name__ == '__main__':
     app.run(debug=True)
-
-

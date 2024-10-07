@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+
     <!-- Incluir el Navbar -->
     {% include 'subastador/navbarsub.html' %}
 
@@ -35,9 +36,9 @@
                                     <div class="form-group">
                                         <label for="categoriaProducto">Categoría del Producto</label>
                                         <select class="form-control" id="categoriaProducto" name="categoriaProducto[]" required>
-                                            <option value="electronicos">Electrónicos</option>
-                                            <option value="vehiculos">Vehículos</option>
-                                            <option value="muebles">Muebles</option>
+                                            {% for categoria in categorias %}
+                                                <option value="{{ categoria.id_categoria }}">{{ categoria.nombre_categoria }}</option>
+                                            {% endfor %}
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -53,6 +54,14 @@
                             <div class="form-group">
                                 <label for="horaFinal">Hora de Finalización</label>
                                 <input type="datetime-local" class="form-control" id="horaFinal" name="horaFinal" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="tipoMoneda">Tipo de Moneda</label>
+                                <select class="form-control" id="tipoMoneda" name="tipoMoneda" required>
+                                    {% for tipo in tipos_moneda %}
+                                        <option value="{{ tipo.id_tipo_moneda }}">{{ tipo.tipo_moneda }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                             <button type="button" class="btn btn-secondary" id="agregarProductoBtn">Agregar Producto</button>
                             <button type="submit" class="btn btn-primary">Crear Subasta</button>
@@ -90,9 +99,9 @@
                 <div class="form-group">
                     <label for="categoriaProducto">Categoría del Producto</label>
                     <select class="form-control" name="categoriaProducto[]" required>
-                        <option value="electronicos">Electrónicos</option>
-                        <option value="vehiculos">Vehículos</option>
-                        <option value="muebles">Muebles</option>
+                        {% for categoria in categorias %}
+                            <option value="{{ categoria.id_categoria }}">{{ categoria.nombre_categoria }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
