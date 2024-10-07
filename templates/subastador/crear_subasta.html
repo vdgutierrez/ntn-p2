@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Subasta</title>
+    <!-- Integración de Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Ruta a tu archivo de estilos -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Incluir el Navbar -->
+    {% include 'subastador/navbarsub.html' %}
+
+    <!-- Contenido -->
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">Crear Nueva Subasta</div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('crear_subasta') }}" id="subastaForm">
+                            <div id="productosContainer">
+                                <div class="producto">
+                                    <div class="form-group">
+                                        <label for="nombreProducto">Nombre del Producto</label>
+                                        <input type="text" class="form-control" id="nombreProducto" name="nombreProducto[]" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="descripcionProducto">Descripción del Producto</label>
+                                        <textarea class="form-control" id="descripcionProducto" name="descripcionProducto[]" rows="3" required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="categoriaProducto">Categoría del Producto</label>
+                                        <select class="form-control" id="categoriaProducto" name="categoriaProducto[]" required>
+                                            <option value="electronicos">Electrónicos</option>
+                                            <option value="vehiculos">Vehículos</option>
+                                            <option value="muebles">Muebles</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="precioInicial">Precio Inicial</label>
+                                        <input type="number" class="form-control" id="precioInicial" name="precioInicial[]" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="horaInicio">Hora de Inicio</label>
+                                <input type="datetime-local" class="form-control" id="horaInicio" name="horaInicio" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="horaFinal">Hora de Finalización</label>
+                                <input type="datetime-local" class="form-control" id="horaFinal" name="horaFinal" required>
+                            </div>
+                            <button type="button" class="btn btn-secondary" id="agregarProductoBtn">Agregar Producto</button>
+                            <button type="submit" class="btn btn-primary">Crear Subasta</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 SubasTEITOR. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('agregarProductoBtn').addEventListener('click', function() {
+            var productosContainer = document.getElementById('productosContainer');
+            var nuevoProducto = document.createElement('div');
+            nuevoProducto.classList.add('producto');
+            nuevoProducto.innerHTML = `
+                <div class="form-group">
+                    <label for="nombreProducto">Nombre del Producto</label>
+                    <input type="text" class="form-control" name="nombreProducto[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="descripcionProducto">Descripción del Producto</label>
+                    <textarea class="form-control" name="descripcionProducto[]" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="categoriaProducto">Categoría del Producto</label>
+                    <select class="form-control" name="categoriaProducto[]" required>
+                        <option value="electronicos">Electrónicos</option>
+                        <option value="vehiculos">Vehículos</option>
+                        <option value="muebles">Muebles</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="precioInicial">Precio Inicial</label>
+                    <input type="number" class="form-control" name="precioInicial[]" required>
+                </div>
+            `;
+            productosContainer.appendChild(nuevoProducto);
+        });
+    </script>
+</body>
+</html>

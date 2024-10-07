@@ -489,6 +489,51 @@ def agregar_producto():
 
     return render_template('subastador/agregar_producto.html')
 
-# Iniciar el servidor Flask
+
+@app.route('/subastador/crear-subasta', methods=['GET', 'POST'])
+def crear_subasta():
+    if request.method == 'POST':
+        hora_inicio = request.form['horaInicio']
+        hora_final = request.form['horaFinal']
+
+        nombre_productos = request.form.getlist('nombreProducto[]')
+        descripcion_productos = request.form.getlist('descripcionProducto[]')
+        categoria_productos = request.form.getlist('categoriaProducto[]')
+        precio_iniciales = request.form.getlist('precioInicial[]')
+
+        conexion = db_connection()
+        if conexion:
+            cursor = conexion.cursor()
+            try:
+                # Insertar la subasta
+                cursor.execute(
+                    "INSERT INTO subasta (hora_inicio, hora_final) VALUES (%s, %s)",
+                    (hora_inicio, hora_final)
+                )
+                subasta_id = cursor.lastrowid
+
+                # Insertar los productos asociados a la subasta
+                for nombre_producto, descripcion_producto, categoria_producto, precio_inicial in zip(nombre_productos, descripcion_productos, categoria_productos, precio_iniciales):
+                    cursor.execute(
+                        "INSERT INTO producto (nombre, descripcion, categoria, precio_inicial, subasta_id) VALUES (%s, %s, %s, %s, %s)",
+                        (nombre_producto, descripcion_producto, categoria_producto, precio_inicial, subasta_id)
+                    )
+
+                conexion.commit()
+                flash('Subasta creada exitosamente', 'success')
+            except mysql.connector.Error as err:
+                print(f"Error: {err}")
+                flash('Error al crear la subasta', 'danger')
+            finally:
+                cursor.close()
+                conexion.close()
+        else:
+            flash('Error al conectar a la base de datos', 'danger')
+
+        return redirect(url_for('crear_subasta'))
+
+    return render_template('subastador/crear_subasta.html')
 if __name__ == '__main__':
     app.run(debug=True)
+
+
