@@ -8,7 +8,7 @@ def db_connection():
             user="root",
             password="",
             database="Proyecto2",
-            port=3306
+            port=3306   
         )
         if conexion.is_connected():
             print("Conexión exitosa")

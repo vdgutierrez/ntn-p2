@@ -4,7 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle de la Subasta</title>
-    <link rel="stylesheet" href="path/to/your/css/styles.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Helvetica Neue', sans-serif;
+        }
+
+        h2 {
+            color: #343a40;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        p {
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+
+        .subasta-img {
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn-puja {
+            background-color: #ff5a5f;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-puja:hover {
+            background-color: #ff767a;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(255, 90, 95, 0.2);
+        }
+
+        .historial-table {
+            margin-top: 40px;
+        }
+
+        .table th, .table td {
+            text-align: center;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 1rem;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -14,25 +75,19 @@
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-6">
-                <!-- Verifica si 'imagen' existe en la estructura de la subasta -->
                 <img src="{{ subasta.imagen or url_for('static', filename='default_image.jpg') }}" alt="{{ categoria.nombre or 'Producto' }}" class="subasta-img">
             </div>
             <div class="col-md-6">
-                <!-- Verifica si 'nombre_producto' existe -->
                 <h2>{{ categoria.nombre or 'Producto Desconocido' }}</h2>
-                <!-- Cambia 'categoria' a una variable que exista -->
                 <p>Categoría: <strong>{{ categoria.nombre_categoria or 'Sin Categoría' }}</strong></p>
-                <!-- Descripción del producto -->
                 <p>Descripción: {{ categoria.descripcion or 'Sin Descripción' }}.</p>
-                <!-- Cambia 'precio_inicial' y 'precio_actual' si las variables no coinciden -->
                 <p>Precio Inicial: ${{ precio_inicial.precio_inicial or 0.00 }}</p>
                 <p>Precio Actual: <span class="text-success">${{ puja.precio_puja if puja else 0.00 }}</span></p>
 
-                <!-- Formulario para realizar una puja -->
                 <form id="pujaForm" action="{{ url_for('detalle_subasta', subasta_id=subasta.id_subasta) }}" method="POST" class="mt-4">
                     <div class="form-group">
                         <label for="monto">Hacer una nueva puja:</label>
-                        <input type="number" name="monto" id="monto" class="form-control puja-input" placeholder="Introduce tu puja" min="{{ (puja.precio_puja if puja else precio_inicial.precio_inicial) + 1 }}" step="0.01" required>
+                        <input type="number" name="monto" id="monto" class="form-control" placeholder="Introduce tu puja" min="{{ (puja.precio_puja if puja else precio_inicial.precio_inicial) + 1 }}" step="0.01" required>
                     </div>
                     <button type="submit" class="btn btn-puja btn-block">Pujar</button>
                 </form>
@@ -41,7 +96,7 @@
 
         <!-- Historial de Pujas -->
         <div class="historial-table mt-5">
-            <h3>Historial de Pujas</h3>
+            <h3 class="text-center">Historial de Pujas</h3>
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -63,7 +118,14 @@
         </div>
     </div>
 
-    <script src="path/to/your/js/scripts.js"></script>
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p>&copy; 2024 SubasTEITOR. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
         $(document).ready(function() {
             $('#pujaForm').on('submit', function(event) {

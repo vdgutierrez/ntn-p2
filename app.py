@@ -19,12 +19,12 @@ class User(UserMixin):
 def load_user(user_id):
     conexion = db_connection()
     cursor = conexion.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM persona  WHERE id_persona = %s", (user_id,))
+    cursor.execute("SELECT * FROM organizador  WHERE id_organizador = %s", (user_id,))
     user_data = cursor.fetchone()
     cursor.close()
     conexion.close()
     if user_data:
-        return User(user_data['id_persona'], user_data['nombre'])
+        return User(user_data['id_organizador'], user_data['usuario'])
     return None
 
 
