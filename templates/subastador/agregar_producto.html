@@ -9,16 +9,23 @@
             font-family: 'Poppins', sans-serif;
             background-color: #fff;
             color: #333;
+            margin: 0;
+            padding: 0;
         }
 
         .navbar {
             background-color: #333; /* Color gris oscuro */
             padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .navbar a {
             color: #fff; /* Texto en blanco */
             margin-right: 15px;
+            text-decoration: none;
+            font-size: 18px;
         }
 
         .navbar-brand {
@@ -31,8 +38,13 @@
             color: #f9c74f; /* Hover amarillo */
         }
 
+        .navbar-links {
+            display: flex;
+        }
+
         .container {
             margin-top: 40px;
+            padding: 20px;
         }
 
         .card {
@@ -88,9 +100,12 @@
 
     <nav class="navbar">
         <div class="navbar-brand">Mi Aplicación</div>
-        <a href="#">Inicio</a>
-        <a href="#">Productos</a>
-        <a href="#">Subastas</a>
+        <div class="navbar-links">
+            <a href="#">Inicio</a>
+            <a href="#">Productos</a>
+            <a href="#">Subastas</a>
+            <a href="#">Contacto</a>
+        </div>
     </nav>
 
     <div class="container">
